@@ -43,6 +43,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.theme.primary
 
 class MainActivity : ComponentActivity() {
+    val composeState = ComposeState()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -52,7 +53,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainPage()
+                    MainPage(
+                        checked = composeState.checkedState.value,
+                        onCheckChanged = {
+                            composeState.changCheckedState(it)
+                        }
+                    )
                 }
             }
         }
@@ -62,7 +68,10 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun MainPage() {
+fun MainPage(
+    checked: Boolean,
+    onCheckChanged:(Boolean)->Unit
+) {
     val emailValue = remember {
         mutableStateOf("")
     }
@@ -70,7 +79,6 @@ fun MainPage() {
         mutableStateOf("")
     }
     val passwordVisibility = remember { mutableStateOf(false) }
-    val checkedState = remember { mutableStateOf(false) }
     val isTruePass = remember { mutableStateOf(true) }
     val isTrueEmail = remember { mutableStateOf(true) }
 
@@ -135,10 +143,12 @@ fun MainPage() {
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 Checkbox(
-                    checked = checkedState.value,
-                    onCheckedChange = { checkedState.value = it },
+                    checked = checked,
+                    onCheckedChange = {
+                        onCheckChanged(it)
+                    },
                     Modifier.padding(horizontal = 10.dp)
-                    )
+                )
 
                 Text(text = stringResource(R.string.remember_me), modifier = Modifier.padding(11.dp))
             }
@@ -186,19 +196,26 @@ fun MainPage() {
 @Preview(showBackground = true)
 @Composable
 fun MainPagePreview() {
+
+    val composeState = ComposeState()
     MyApplicationTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            MainPage()
+            MainPage(
+                checked = composeState.checkedState.value,
+                onCheckChanged = {
+                    composeState.changCheckedState(it)
 
+
+                }
+            )
         }
     }
+
 }
-
-
 fun isValidPassword(password: String): Boolean {
     return (password.length >= 8 && (password.contains('_')||password.contains('@')||password.contains('#')||password.contains('$')||password.contains('&')||password.contains('%')||password.contains('+')||password.contains('!')))
 }
