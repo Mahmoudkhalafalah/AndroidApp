@@ -58,7 +58,9 @@ class MainActivity : ComponentActivity() {
                         onCheckChanged = {
                             composeState.changCheckedState(it)
                         }
+
                     )
+                    //MessageList(profiles = getDummyProfiles())
                 }
             }
         }
