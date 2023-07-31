@@ -1,4 +1,5 @@
 package com.example.myapplication
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -83,6 +85,7 @@ fun MainPage(
     val passwordVisibility = remember { mutableStateOf(false) }
     val isTruePass = remember { mutableStateOf(true) }
     val isTrueEmail = remember { mutableStateOf(true) }
+    val mContext = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -158,8 +161,13 @@ fun MainPage(
 
             Button(
                 onClick = {
+
                     isTruePass.value = isValidPassword(passwordValue.value)
                     isTrueEmail.value = isValidEmail(emailValue.value)
+                    if(isTrueEmail.value&&isTruePass.value){
+                        mContext.startActivity(Intent(mContext, MainActivity2::class.java))
+                    }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth(0.4f)

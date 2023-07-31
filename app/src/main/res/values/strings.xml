@@ -10,4 +10,6 @@
     <string name="sign_in">Sign In</string>
     <string name="star_icon">Star Icon</string>
     <string name="internship">Internship</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_sign_up">SignUp</string>
 </resources>
