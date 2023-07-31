@@ -3,6 +3,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,10 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -34,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,7 +44,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.theme.primary
 
 class MainActivity : ComponentActivity() {
-    val composeState = ComposeState()
+    private val composeState = ComposeState()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -97,10 +96,9 @@ fun MainPage(
                 text = stringResource(R.string.internship),
                 fontSize = 50.sp
             )
-            Icon(
-                Icons.Default.Star, // Replace this with the desired icon
-                contentDescription = stringResource(R.string.star_icon),
-                modifier = Modifier.size(50.dp)
+            Image(
+                painter = painterResource(id = R.drawable.user),
+                contentDescription = ""
             )
 
 
@@ -186,7 +184,9 @@ fun MainPage(
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     text = stringResource(R.string.sign_up),
-                    modifier = Modifier.clickable { },
+                    modifier = Modifier.clickable {
+                        mContext.startActivity(Intent(mContext, SignUp::class.java))
+                    },
                     color = Color.Gray
                 )
 
