@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -15,9 +17,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,18 +43,23 @@ class SignUp : ComponentActivity() {
                     signUp(
                         email = composeState.email.value,
                         changeEmail = { composeState.onEmailTextChange(it) },
-                        name= composeState.name.value,
+                        name = composeState.name.value,
                         changeName = { composeState.onNameTextChange(it) },
                         job = composeState.job.value,
-                        changeJob = {composeState.onJobTextChange(it)},
+                        changeJob = { composeState.onJobTextChange(it) },
                         passwordText = composeState.password.value,
-                        changePassword = {composeState.onPasswordChange(it)},
+                        changePassword = { composeState.onSignPasswordChange(it) },
                         passwordVisibility = composeState.passwordVisibility.value,
-                        changePasswordVisibility = {composeState.changePasswordVisibility(it)},
+                        changePasswordVisibility = { composeState.changePasswordVisibility(it) },
                         rPasswordText = composeState.rPassword.value,
-                        changeRPassword = {composeState.onRPasswordChange(it)},
+                        changeRPassword = { composeState.onSignRPasswordChange(it) },
                         rPasswordVisibility = composeState.rPasswordVisibility.value,
-                        changeRPasswordVisibility = {composeState.changeRPasswordVisibility(it)}
+                        changeRPasswordVisibility = { composeState.changeRPasswordVisibility(it) },
+                        buttonClick = { composeState.signUpButtonClicked() },
+                        success = composeState.successfulSignUp.value,
+                        validPass = composeState.truePass.value,
+                        matched = composeState.passwordMatch.value,
+                        registerProfile = {composeState.addName()}
                     )
                 }
             }
@@ -74,7 +84,13 @@ fun signUp(
     changeRPassword: (String) -> Unit,
     rPasswordVisibility: Boolean,
     changeRPasswordVisibility: (Boolean) -> Unit,
+    buttonClick: () -> Unit,
+    success: Boolean,
+    validPass: Boolean,
+    matched: Boolean,
+    registerProfile: ()-> Unit
 ) {
+    val mContext = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -114,7 +130,11 @@ fun signUp(
             changeVisibility = { changePasswordVisibility(it) },
             onTextChange = { changePassword(it) },
             label = stringResource(id = R.string.password),
-            holder = stringResource(id = R.string.password)
+            holder = stringResource(id = R.string.password),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = if (!validPass) Color.Red else Color.Green,
+                unfocusedBorderColor = if (!validPass) Color.Red else Color.Green
+            )
         )
 
         PasswordTextField(
@@ -127,12 +147,25 @@ fun signUp(
                 changeRPassword(it)
             },
             label = stringResource(id = R.string.repeat_password),
-            holder = stringResource(id = R.string.password)
+            holder = stringResource(id = R.string.password),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = if (!matched) Color.Red else Color.Green,
+                unfocusedBorderColor = if (!matched) Color.Red else Color.Green
+            )
         )
         Spacer(modifier = Modifier.height(15.dp))
         Button(
             onClick = {
-
+                buttonClick()
+                Toast.makeText(
+                    mContext,
+                    if (!success) "Fill all the fields" else "Registered Successfully",
+                    Toast.LENGTH_LONG
+                ).show()
+                if(success) {
+                    registerProfile()
+                    mContext.startActivity(Intent(mContext, MainActivity::class.java))
+                }
             },
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -146,21 +179,6 @@ fun signUp(
     }
 }
 
-
-fun checkSignUp(
-    email: String,
-    name: String,
-    job: String
-): Boolean {
-    return email.isNotEmpty() && name.isNotEmpty() && job.isNotEmpty()
-}
-
-fun checkPasswords(
-    pass: String,
-    pass2: String
-): Boolean {
-    return pass == pass2
-}
 
 @Preview(showBackground = true)
 @Composable

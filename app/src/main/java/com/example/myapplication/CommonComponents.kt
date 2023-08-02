@@ -6,9 +6,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -22,7 +26,11 @@ fun NameTextField(
     name: String,
     onEmailChange: (String) -> Unit,
     label: String,
-    holder: String
+    holder: String,
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+        focusedBorderColor = Gray,
+        unfocusedBorderColor = DarkGray
+    )
 ) {
     OutlinedTextField(
         value = name,
@@ -35,7 +43,9 @@ fun NameTextField(
             )
         },
         singleLine = true,
-        modifier = Modifier.fillMaxWidth(0.8f)
+        modifier = Modifier.fillMaxWidth(0.8f),
+        colors = colors
+
     )
 }
 
@@ -47,7 +57,11 @@ fun PasswordTextField(
     changeVisibility: (Boolean) -> Unit,
     onTextChange: (String) -> Unit,
     label: String,
-    holder: String
+    holder: String,
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+        focusedBorderColor = Gray,
+        unfocusedBorderColor = DarkGray
+    )
 ) {
     OutlinedTextField(
         value = password,
@@ -70,6 +84,7 @@ fun PasswordTextField(
         },
         singleLine = true,
         modifier = Modifier.fillMaxWidth(0.8f),
-        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation()
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        colors = colors
     )
 }

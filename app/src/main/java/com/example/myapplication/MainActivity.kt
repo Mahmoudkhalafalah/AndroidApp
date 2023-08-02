@@ -2,7 +2,7 @@ package com.example.myapplication
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -22,8 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +43,8 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    MainPage(email = composeState.email.value,
+                    MainPage(
+                        email = composeState.email.value,
                         changeEmail = { composeState.onEmailTextChange(it) },
                         password = composeState.password.value,
                         changePassword = { composeState.onPasswordChange(it) },
@@ -57,8 +56,9 @@ class MainActivity : ComponentActivity() {
                         validPass = composeState.truePass.value,
                         buttonClicked = { composeState.onButtonClick() },
                         buttonPressed = composeState.buttonPressed.value,
-                        changePressedState = {composeState.changePressedState()}
-                        )
+                        changePressedState = { composeState.changePressedState() },
+                        foundName = composeState.found.value
+                    )
                 }
 
 
@@ -84,12 +84,9 @@ fun MainPage(
     validPass: Boolean,
     buttonClicked: () -> Unit,
     buttonPressed: Boolean,
-    changePressedState: () -> Unit
+    changePressedState: () -> Unit,
+    foundName: Boolean
 ) {
-    val isTruePass = remember { mutableStateOf(false) }
-    val isTrueEmail = remember { mutableStateOf(false) }
-    val print = remember { mutableStateOf(false) }
-    val pressed = remember { mutableStateOf(false) }
     val mContext = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -101,6 +98,7 @@ fun MainPage(
             Image(
                 painter = painterResource(id = R.drawable.user), contentDescription = ""
             )
+            Spacer(modifier = Modifier.height(50.dp))
             NameTextField(
                 name = email,
                 onEmailChange = {
@@ -135,11 +133,11 @@ fun MainPage(
             Spacer(modifier = Modifier.height(60.dp))
 
             Text(
-                text = if (!validPass&&buttonPressed) stringResource(R.string.invalid_password) else "",
+                text = if (!validPass && buttonPressed) stringResource(R.string.invalid_password) else "",
                 color = Color.Red
             )
             Text(
-                text = if (!validEmail&&buttonPressed) stringResource(R.string.invalid_email) else "",
+                text = if (!validEmail && buttonPressed) stringResource(R.string.invalid_email) else "",
                 color = Color.Red
             )
 
@@ -147,10 +145,11 @@ fun MainPage(
                 onClick = {
                     changePressedState()
                     buttonClicked()
-                    Log.d("Pressed",buttonPressed.toString())
-                    Log.d("Email",validEmail.toString())
-                    Log.d("Pass",validPass.toString())
-
+                    if (foundName)
+                        mContext.startActivity(Intent(mContext, MainActivity2::class.java))
+                    else
+                        Toast.makeText(
+                            mContext, "Name is not found", Toast.LENGTH_LONG).show()
                 }, modifier = Modifier
                     .fillMaxWidth(0.4f)
                     .height(50.dp)
@@ -162,7 +161,7 @@ fun MainPage(
             Spacer(modifier = Modifier.height(20.dp))
             Row {
                 Text(
-                    text = stringResource(R.string.doesn_t_have_account)
+                    text = stringResource(R.string.don_t_have_account)
                 )
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
@@ -183,8 +182,8 @@ fun MainPage(
             )
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = if (validEmail && validPass &&  checkedState) {
-                    "Remembered"
+                text = if (validEmail && validPass && checkedState) {
+                    stringResource(R.string.remembered)
                 } else "",
                 color = Color.Green
             )
@@ -207,16 +206,4 @@ fun MainPagePreview() {
         }
     }
 
-}
-
-fun isValidPassword(password: String): Boolean {
-    return (password.length >= 8 && (password.contains('_') || password.contains('@') || password.contains(
-        '#'
-    ) || password.contains('$') || password.contains('&') || password.contains('%') || password.contains(
-        '+'
-    ) || password.contains('!')))
-}
-
-fun isValidEmail(email: String): Boolean {
-    return (email.isNotEmpty())
 }

@@ -1,17 +1,21 @@
 package com.example.myapplication
 
+import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -20,7 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -45,53 +52,84 @@ fun app() {
     }
 }
 
+val profilesList: MutableList<Profile> = mutableListOf(
+    Profile("John", "Software Engineer"),
+    Profile("Alice", "Designer"),
+    Profile("Bob", "Data Scientist"),
+    Profile("Emily", "Product Manager"),
+    Profile("Michael", "Marketing Specialist"),
+    Profile("Olivia", "Teacher"),
+    Profile("David", "Doctor"),
+    Profile("Sophia", "Accountant"),
+    Profile("Daniel", "Sales Manager"),
+    Profile("Emma", "HR Manager"),
+    Profile("William", "Graphic Designer"),
+    Profile("Ava", "Lawyer"),
+    Profile("James", "Chef"),
+    Profile("Isabella", "Architect"),
+    Profile("Alexander", "Financial Analyst"),
+    Profile("Mia", "Journalist"),
+    Profile("Ethan", "Mechanical Engineer"),
+    Profile("Charlotte", "Nurse"),
+    Profile("Oliver", "Photographer"),
+    Profile("Amelia", "Researcher")
+)
+
 data class Profile(val name: String, val job: String)
 
-fun getDummyProfiles(): List<Profile> {
-    return listOf(
-        Profile("John", "Software Engineer"),
-        Profile("Alice", "Designer"),
-        Profile("Bob", "Data Scientist"),
-        Profile("Emily", "Product Manager"),
-        Profile("Michael", "Marketing Specialist"),
-        Profile("Olivia", "Teacher"),
-        Profile("David", "Doctor"),
-        Profile("Sophia", "Accountant"),
-        Profile("Daniel", "Sales Manager"),
-        Profile("Emma", "HR Manager"),
-        Profile("William", "Graphic Designer"),
-        Profile("Ava", "Lawyer"),
-        Profile("James", "Chef"),
-        Profile("Isabella", "Architect"),
-        Profile("Alexander", "Financial Analyst"),
-        Profile("Mia", "Journalist"),
-        Profile("Ethan", "Mechanical Engineer"),
-        Profile("Charlotte", "Nurse"),
-        Profile("Oliver", "Photographer"),
-        Profile("Amelia", "Researcher")
-    )
+fun getDummyProfiles(): MutableList<Profile> {
+    return profilesList
 }
 
 @Composable
 fun MessageList(profiles: List<Profile>) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        profiles.forEach {
-            Row(modifier = Modifier.padding(10.dp)) {
-                Column {
-                    Image(
-                        painter = painterResource(id = R.drawable.user),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                    )
-                }
-                Spacer(modifier = Modifier.width(5.dp))
-                Column {
-                    Text(text = it.name)
-                    Text(text = it.job)
+    val mContext = LocalContext.current
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.profiles),
+            modifier = Modifier
+                .height(50.dp)
+                .background(Color.DarkGray)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
+                )
+
+        LazyColumn(
+            Modifier
+                .weight(1F)
+                .align(Alignment.Start)
+                .fillMaxWidth()) {
+            item {
+                profiles.forEach {
+                    Row(modifier = Modifier.padding(10.dp)) {
+                        Column {
+                            Image(
+                                painter = painterResource(id = R.drawable.user),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Column {
+                            Text(text = it.name)
+                            Text(text = it.job)
+                        }
+                    }
                 }
             }
+
+        }
+        Button(
+            onClick = {
+                mContext.startActivity(Intent(mContext, MainActivity::class.java))
+            }, modifier = Modifier.height(50.dp)
+        ) {
+            Text(text = "Go to Sign In")
         }
     }
 }

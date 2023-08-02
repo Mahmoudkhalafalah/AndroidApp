@@ -18,4 +18,8 @@
     <string name="fullname">FullName</string>
     <string name="repeat_password">Repeat Password</string>
     <string name="title_activity_lazy_lists">LazyLists</string>
+    <string name="name_is_not_found">Name is not found</string>
+    <string name="remembered">Remembered</string>
+    <string name="don_t_have_account">don\'t have account</string>
+    <string name="profiles">Profiles</string>
 </resources>
