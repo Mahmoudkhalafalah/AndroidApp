@@ -24,14 +24,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun app(){
-    Card (
+fun app() {
+    Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(5.dp),
         colors = CardDefaults.cardColors(Color.White),
         modifier = Modifier
-    ){
-        Column (modifier = Modifier,
+    ) {
+        Column(
+            modifier = Modifier,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
 
@@ -43,6 +44,7 @@ fun app(){
         }
     }
 }
+
 data class Profile(val name: String, val job: String)
 
 fun getDummyProfiles(): List<Profile> {
@@ -69,18 +71,20 @@ fun getDummyProfiles(): List<Profile> {
         Profile("Amelia", "Researcher")
     )
 }
+
 @Composable
 fun MessageList(profiles: List<Profile>) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState()))  {
-        profiles.forEach { 
-            Row(modifier = Modifier.padding(10.dp)){
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        profiles.forEach {
+            Row(modifier = Modifier.padding(10.dp)) {
                 Column {
                     Image(
                         painter = painterResource(id = R.drawable.user),
-                        contentDescription ="",
+                        contentDescription = "",
                         modifier = Modifier
                             .size(50.dp)
-                            .clip(CircleShape) )
+                            .clip(CircleShape)
+                    )
                 }
                 Spacer(modifier = Modifier.width(5.dp))
                 Column {
