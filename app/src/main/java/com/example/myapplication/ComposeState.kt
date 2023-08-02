@@ -35,6 +35,9 @@ class ComposeState : ViewModel() {
 
     private val _trueEmail = mutableStateOf(false)
     val trueEmail: State<Boolean> = _trueEmail
+
+    private val _buttonPressed = mutableStateOf(false)
+    val buttonPressed: State<Boolean> = _buttonPressed
     fun changCheckedState(check: Boolean) {
         _checkedState.value = check
     }
@@ -72,7 +75,11 @@ class ComposeState : ViewModel() {
         _trueEmail.value=isValidEmail(email.value)
     }
 
-    fun isValidPassword(password: String): Boolean {
+    fun changePressedState(){
+        _buttonPressed.value=true
+    }
+
+    private fun isValidPassword(password: String): Boolean {
         return (password.length >= 8 && (password.contains('_') || password.contains('@') || password.contains(
             '#'
         ) || password.contains('$') || password.contains('&') || password.contains('%') || password.contains(
@@ -80,7 +87,7 @@ class ComposeState : ViewModel() {
         ) || password.contains('!')))
     }
 
-    fun isValidEmail(email: String): Boolean {
+    private fun isValidEmail(email: String): Boolean {
         return (email.isNotEmpty())
     }
 

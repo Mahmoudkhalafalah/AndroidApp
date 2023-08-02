@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -42,20 +43,21 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     MainPage(email = composeState.email.value,
-                        changeEmail = {composeState.onEmailTextChange(it)},
+                        changeEmail = { composeState.onEmailTextChange(it) },
                         password = composeState.password.value,
-                        changePassword = {composeState.onPasswordChange(it)},
+                        changePassword = { composeState.onPasswordChange(it) },
                         passwordVisibility = composeState.passwordVisibility.value,
-                        changePasswordVisibility = {composeState.changePasswordVisibility(it)},
+                        changePasswordVisibility = { composeState.changePasswordVisibility(it) },
                         checkedState = composeState.checkedState.value,
-                        changeCheckedState = {composeState.changCheckedState(it)},
+                        changeCheckedState = { composeState.changCheckedState(it) },
                         validEmail = composeState.trueEmail.value,
                         validPass = composeState.truePass.value,
-                        buttonClicked = {composeState.onButtonClick()}
+                        buttonClicked = { composeState.onButtonClick() },
+                        buttonPressed = composeState.buttonPressed.value,
+                        changePressedState = {composeState.changePressedState()}
                         )
                 }
 
@@ -71,16 +73,18 @@ class MainActivity : ComponentActivity() {
 
 fun MainPage(
     email: String,
-    changeEmail: (String)->Unit,
+    changeEmail: (String) -> Unit,
     password: String,
-    changePassword:(String)->Unit,
+    changePassword: (String) -> Unit,
     passwordVisibility: Boolean,
     changePasswordVisibility: (Boolean) -> Unit,
     checkedState: Boolean,
     changeCheckedState: (Boolean) -> Unit,
-    validEmail:Boolean,
+    validEmail: Boolean,
     validPass: Boolean,
-    buttonClicked: ()->Unit
+    buttonClicked: () -> Unit,
+    buttonPressed: Boolean,
+    changePressedState: () -> Unit
 ) {
     val isTruePass = remember { mutableStateOf(false) }
     val isTrueEmail = remember { mutableStateOf(false) }
@@ -95,8 +99,7 @@ fun MainPage(
         ) {
             Spacer(modifier = Modifier.height(50.dp))
             Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = ""
+                painter = painterResource(id = R.drawable.user), contentDescription = ""
             )
             NameTextField(
                 name = email,
@@ -110,50 +113,50 @@ fun MainPage(
                 password = password,
                 visible = passwordVisibility,
                 changeVisibility = { changePasswordVisibility(it) },
-                onTextChange = { changePassword(it) },
+                onTextChange = {
+                    changePassword(it)
+
+                },
                 label = stringResource(id = R.string.password),
                 holder = stringResource(id = R.string.password)
             )
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 Checkbox(
-                    checked = checkedState,
-                    onCheckedChange = {
+                    checked = checkedState, onCheckedChange = {
                         changeCheckedState(it)
-                    },
-                    Modifier.padding(horizontal = 10.dp)
+                    }, Modifier.padding(horizontal = 10.dp)
                 )
 
                 Text(
-                    text = stringResource(R.string.remember_me),
-                    modifier = Modifier.padding(11.dp)
+                    text = stringResource(R.string.remember_me), modifier = Modifier.padding(11.dp)
                 )
             }
             Spacer(modifier = Modifier.height(60.dp))
 
             Text(
-                text = if (!validPass && pressed.value) stringResource(R.string.invalid_password) else "",
+                text = if (!validPass&&buttonPressed) stringResource(R.string.invalid_password) else "",
                 color = Color.Red
             )
             Text(
-                text = if (!validEmail&& pressed.value) stringResource(R.string.invalid_email) else "",
+                text = if (!validEmail&&buttonPressed) stringResource(R.string.invalid_email) else "",
                 color = Color.Red
             )
 
             Button(
                 onClick = {
+                    changePressedState()
                     buttonClicked()
-                    pressed.value = true
-                    print.value = validEmail && validPass
+                    Log.d("Pressed",buttonPressed.toString())
+                    Log.d("Email",validEmail.toString())
+                    Log.d("Pass",validPass.toString())
 
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth(0.4f)
                     .height(50.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.sign_in),
-                    fontSize = 25.sp
+                    text = stringResource(R.string.sign_in), fontSize = 25.sp
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -163,11 +166,9 @@ fun MainPage(
                 )
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = stringResource(R.string.sign_up),
-                    modifier = Modifier.clickable {
+                    text = stringResource(R.string.sign_up), modifier = Modifier.clickable {
                         mContext.startActivity(Intent(mContext, SignUp::class.java))
-                    },
-                    color = Color.Gray
+                    }, color = Color.Gray
                 )
 
 
@@ -175,15 +176,18 @@ fun MainPage(
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = if (print.value) {
-                    if (!checkedState) {
-                        "Welcome ${email}"
-                    } else {
-                        "Welcome ${email} \n    Remembered"
-                    }
-                } else "", color = Color.Green
+                text = if (validEmail && validPass) {
+                    "Welcome $email"
+                } else "",
+                color = Color.Green
             )
-            //Text(text =if (isTrueEmail.value&&isTruePass.value)"Signed In successfully" else "", color = Color.Green)
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = if (validEmail && validPass &&  checkedState) {
+                    "Remembered"
+                } else "",
+                color = Color.Green
+            )
         }
     }
 
@@ -196,8 +200,7 @@ fun MainPagePreview() {
     MyApplicationTheme {
         // A surface container using the 'background' color from the theme
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
 
 
