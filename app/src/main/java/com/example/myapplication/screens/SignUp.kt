@@ -1,11 +1,5 @@
-package com.example.myapplication
+package com.example.myapplication.screens
 
-import android.content.Intent
-import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,80 +8,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.ui.theme.MyApplicationTheme
-
-class SignUp : ComponentActivity() {
-    private val composeState by viewModels<ComposeState>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MyApplicationTheme {
-                LaunchedEffect(key1 = true) {
-                    composeState.successfulSignUp.collect {
-                        if (it) {
-                            Toast.makeText(
-                                this@SignUp,
-                                "Registered Successfully",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            this@SignUp.startActivity(Intent(this@SignUp, MainActivity::class.java))
-                        } else
-                            Toast.makeText(
-                                this@SignUp,
-                                "Fill all the fields",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                    }
-
-                }
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    signUp(
-                        email = composeState.email.value,
-                        changeEmail = { composeState.onEmailTextChange(it) },
-                        name = composeState.name.value,
-                        changeName = { composeState.onNameTextChange(it) },
-                        job = composeState.job.value,
-                        changeJob = { composeState.onJobTextChange(it) },
-                        passwordText = composeState.password.value,
-                        changePassword = { composeState.onSignPasswordChange(it) },
-                        passwordVisibility = composeState.passwordVisibility.value,
-                        changePasswordVisibility = { composeState.changePasswordVisibility(it) },
-                        rPasswordText = composeState.rPassword.value,
-                        changeRPassword = { composeState.onSignRPasswordChange(it) },
-                        rPasswordVisibility = composeState.rPasswordVisibility.value,
-                        changeRPasswordVisibility = { composeState.changeRPasswordVisibility(it) },
-                        buttonClick = { composeState.signUpButtonClicked()},
-                        validPass = composeState.truePass.value,
-                        matched = composeState.passwordMatch.value,
-                        registerProfile = { composeState.addName() }
-                    )
-                }
-            }
-        }
-    }
-}
+import com.example.myapplication.NameTextField
+import com.example.myapplication.PasswordTextField
+import com.example.myapplication.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun signUp(
+fun SignUp(
     email: String,
     changeEmail: (String) -> Unit,
     name: String,
@@ -105,11 +41,10 @@ fun signUp(
     buttonClick: () -> Unit,
     validPass: Boolean,
     matched: Boolean,
-    registerProfile: () -> Unit
 ) {
-    val mContext = LocalContext.current
 
     Column(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -184,14 +119,5 @@ fun signUp(
                 fontSize = 25.sp
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun signUpPreview() {
-    MyApplicationTheme {
-
     }
 }
