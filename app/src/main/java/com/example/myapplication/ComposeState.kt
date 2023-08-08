@@ -3,6 +3,10 @@ package com.example.myapplication
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 class ComposeState : ViewModel() {
 
@@ -42,11 +46,11 @@ class ComposeState : ViewModel() {
     private val _passwordMatch = mutableStateOf(false)
     val passwordMatch: State<Boolean> = _passwordMatch
 
-    private val _successfulSignUp = mutableStateOf(false)
-    val successfulSignUp: State<Boolean> = _successfulSignUp
+    private val _successfulSignUp = MutableSharedFlow<Boolean>()
+    val successfulSignUp = _successfulSignUp.asSharedFlow()
 
-    private val _found = mutableStateOf(false)
-    val found: State<Boolean> = _found
+    private val _found = MutableSharedFlow<Boolean>()
+    val found = _found.asSharedFlow()
     fun changCheckedState(check: Boolean) {
         _checkedState.value = check
     }
@@ -82,20 +86,27 @@ class ComposeState : ViewModel() {
     fun onButtonClick() {
         _truePass.value = isValidPassword(password.value)
         _trueEmail.value = isValidEmail(email.value)
-        _found.value = search(email.value)
+        viewModelScope.launch {
+        _found.emit(search(_email.value))
+        }
     }
 
     fun changePressedState() {
         _buttonPressed.value = true
     }
+
     fun onSignPasswordChange(text: String) {
         _password.value = text
         _truePass.value = isValidPassword(text)
 
     }
+
     fun onSignRPasswordChange(text: String) {
         _rPassword.value = text
-        _passwordMatch.value = checkPasswords(text,password.value)
+        _passwordMatch.value = checkPasswords(text, password.value)
+        viewModelScope.launch {
+            _found.emit(search(_email.value))
+        }
     }
 
 
@@ -112,14 +123,19 @@ class ComposeState : ViewModel() {
     }
 
     fun signUpButtonClicked() {
-        _passwordMatch.value = checkPasswords(password.value, rPassword.value)
-        _successfulSignUp.value = checkSignUp(
+        var state = checkSignUp(
             email.value,
             name.value,
             job.value,
             password.value,
             rPassword.value
         ) && checkPasswords(password.value, rPassword.value)
+        _passwordMatch.value = checkPasswords(password.value, rPassword.value)
+        if(state)
+            addName()
+        viewModelScope.launch {
+            _successfulSignUp.emit(state)
+        }
     }
 
     private fun checkSignUp(
@@ -139,13 +155,13 @@ class ComposeState : ViewModel() {
         return pass == pass2
     }
 
-    fun addName(){
-        profilesList.add(Profile(name.value,job.value))
+    fun addName() {
+        profilesList.add(Profile(name.value, job.value))
     }
 
-    private fun search (text: String): Boolean{
-        profilesList.forEach{
-            if(it.name==text)
+    private fun search(text: String): Boolean {
+        profilesList.forEach {
+            if (it.name == text)
                 return true
         }
         return false

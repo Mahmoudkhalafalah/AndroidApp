@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +40,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
+
+                LaunchedEffect(key1 = true) {
+                    composeState.found.collect {
+                        if (it)
+                            startActivity(Intent(this@MainActivity, MainActivity2::class.java))
+                        else
+                            Toast.makeText(
+                                this@MainActivity, "Name is not found", Toast.LENGTH_SHORT
+                            ).show()
+                    }
+
+                }
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -56,8 +69,7 @@ class MainActivity : ComponentActivity() {
                         validPass = composeState.truePass.value,
                         buttonClicked = { composeState.onButtonClick() },
                         buttonPressed = composeState.buttonPressed.value,
-                        changePressedState = { composeState.changePressedState() },
-                        foundName = composeState.found.value
+                        changePressedState = { composeState.changePressedState() }
                     )
                 }
 
@@ -84,8 +96,7 @@ fun MainPage(
     validPass: Boolean,
     buttonClicked: () -> Unit,
     buttonPressed: Boolean,
-    changePressedState: () -> Unit,
-    foundName: Boolean
+    changePressedState: () -> Unit
 ) {
     val mContext = LocalContext.current
 
@@ -145,11 +156,6 @@ fun MainPage(
                 onClick = {
                     changePressedState()
                     buttonClicked()
-                    if (foundName)
-                        mContext.startActivity(Intent(mContext, MainActivity2::class.java))
-                    else
-                        Toast.makeText(
-                            mContext, "Name is not found", Toast.LENGTH_LONG).show()
                 }, modifier = Modifier
                     .fillMaxWidth(0.4f)
                     .height(50.dp)

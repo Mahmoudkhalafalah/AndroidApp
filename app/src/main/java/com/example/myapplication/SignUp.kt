@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +36,24 @@ class SignUp : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
+                LaunchedEffect(key1 = true) {
+                    composeState.successfulSignUp.collect {
+                        if (it) {
+                            Toast.makeText(
+                                this@SignUp,
+                                "Registered Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            this@SignUp.startActivity(Intent(this@SignUp, MainActivity::class.java))
+                        } else
+                            Toast.makeText(
+                                this@SignUp,
+                                "Fill all the fields",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    }
+
+                }
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -55,11 +74,10 @@ class SignUp : ComponentActivity() {
                         changeRPassword = { composeState.onSignRPasswordChange(it) },
                         rPasswordVisibility = composeState.rPasswordVisibility.value,
                         changeRPasswordVisibility = { composeState.changeRPasswordVisibility(it) },
-                        buttonClick = { composeState.signUpButtonClicked() },
-                        success = composeState.successfulSignUp.value,
+                        buttonClick = { composeState.signUpButtonClicked()},
                         validPass = composeState.truePass.value,
                         matched = composeState.passwordMatch.value,
-                        registerProfile = {composeState.addName()}
+                        registerProfile = { composeState.addName() }
                     )
                 }
             }
@@ -85,10 +103,9 @@ fun signUp(
     rPasswordVisibility: Boolean,
     changeRPasswordVisibility: (Boolean) -> Unit,
     buttonClick: () -> Unit,
-    success: Boolean,
     validPass: Boolean,
     matched: Boolean,
-    registerProfile: ()-> Unit
+    registerProfile: () -> Unit
 ) {
     val mContext = LocalContext.current
 
@@ -157,15 +174,6 @@ fun signUp(
         Button(
             onClick = {
                 buttonClick()
-                Toast.makeText(
-                    mContext,
-                    if (!success) "Fill all the fields" else "Registered Successfully",
-                    Toast.LENGTH_LONG
-                ).show()
-                if(success) {
-                    registerProfile()
-                    mContext.startActivity(Intent(mContext, MainActivity::class.java))
-                }
             },
             modifier = Modifier
                 .fillMaxWidth(0.4f)
